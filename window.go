@@ -9,7 +9,7 @@ import (
 func createWindow(img image.Image) (*pixelgl.Window, error) {
 
 	cfg := pixelgl.WindowConfig{
-		Title:  "Navigator",
+		Title:  "p4",
 		Bounds: pixel.R(0, 0, float64(img.Bounds().Max.X), float64(img.Bounds().Max.Y)),
 		VSync:  true,
 	}

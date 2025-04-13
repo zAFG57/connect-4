@@ -75,15 +75,15 @@ func (g *Game) UpdateGraphicalBoard() {
 		for y:=0; y<7; y++ {
 			switch g.board[x][y] {
 			case 0:
-				for a:=0; a<40; a++ {
-					for b:=0; b<40; b++ {
-						g.img.Set(x*40+a,280-(y*40+b), color.RGBA{0, 0, 255, 255})
+				for a:=0; a<30; a++ {
+					for b:=0; b<30; b++ {
+						g.img.Set(x*40+a+5,280-(y*40+b+5), color.RGBA{0, 0, 255, 255})
 					}
 				}
 			case 2:
-				for a:=0; a<40; a++ {
-					for b:=0; b<40; b++ {
-						g.img.Set(x*40+a,280-(y*40+b), color.RGBA{255, 0, 0, 255})
+				for a:=0; a<30; a++ {
+					for b:=0; b<30; b++ {
+						g.img.Set(x*40+a+5,280-(y*40+b+5), color.RGBA{255, 0, 0, 255})
 					}
 				}
 			}
