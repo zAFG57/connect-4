@@ -11,7 +11,7 @@ var isTimedOut bool = false
 var game Game
 var p1 Player = &HumanPlayer{}
 var p2 Player = &HumanPlayer{}
-var nnnarv = Nnnarv{}
+var p3 *IaPlayer = &IaPlayer{}
 
 func main() {
 	pixelgl.Run(run)
@@ -23,9 +23,8 @@ func run() {
 	defer win.Destroy()
 	p1.Init(&game)
 	p2.Init(&game)
-	game.Init(p1, p2, img)
-	nnnarv.Init(5,7*7,0,3)
-	go loadCsvToNnnarv(&nnnarv,"python/data.csv")
+	p3.Init(&game)
+	game.Init(p1, p3, img)
 	UpdateWindow(win,img)
 	playingLoop(win,img)
 }

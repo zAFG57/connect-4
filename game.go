@@ -25,6 +25,8 @@ func (g *Game) Init(p1 Player, p2 Player, img *image.RGBA) {
 			g.board[i][y] = 1
 		}
 	}
+	g.isToPlayer1ToPlay = true
+	g.player1.YourTurn()
 }
 
 func (g *Game) Click(y int) {
@@ -60,15 +62,12 @@ func (g *Game) Play(n uint8) {
 	}
 	g.isToPlayer1ToPlay = !g.isToPlayer1ToPlay
 	if (g.isToPlayer1ToPlay) {
-		g.player1.YourTurn()
+		go g.player1.YourTurn()
 		return
 	}
-	g.player2.YourTurn()
+	go g.player2.YourTurn()
 }
 
-func (g *Game) CheckIfIsValid(n uint8) bool {
-	return g.board[n][6] == 1
-}
 
 func (g *Game) UpdateGraphicalBoard() {
 	for x:=0; x<7; x++ {
@@ -92,44 +91,112 @@ func (g *Game) UpdateGraphicalBoard() {
 }
 
 func (g *Game) IsFoorConnected() bool {
+	return isFoorConnected(g.board)
+}
+
+func isFoorConnected(board [][]uint8) bool {
 	for x:=0; x<7; x++ {
 		for y:=0; y<3; y++ {
 			if (
-				g.board[x][y] == g.board[x][1+y] &&
-				g.board[x][1+y] == g.board[x][2+y] &&
-				g.board[x][2+y] == g.board[x][3+y] &&
-				g.board[x][3+y] != 1) {
+				board[x][y] == board[x][1+y] &&
+				board[x][1+y] == board[x][2+y] &&
+				board[x][2+y] == board[x][3+y] &&
+				board[x][3+y] != 1) {
 				return true
 			}
 			if (
-				g.board[y][x] == g.board[1+y][x] &&
-				g.board[1+y][x] == g.board[2+y][x] &&
-				g.board[2+y][x] == g.board[3+y][x] &&
-				g.board[3+y][x] != 1) {
+				board[y][x] == board[1+y][x] &&
+				board[1+y][x] == board[2+y][x] &&
+				board[2+y][x] == board[3+y][x] &&
+				board[3+y][x] != 1) {
 				return true
 			}
 		}
 	}
-
 	for x:=0; x<4; x++ {
 		for y:=0; y<4; y++ {
 			if (
-				g.board[x][y+3] == g.board[1+x][y+2] &&
-				g.board[1+x][y+2] == g.board[2+x][y+1] &&
-				g.board[2+x][y+1] == g.board[x+3][y] &&
-				g.board[x+3][y] != 1) {
+				board[x][y+3] == board[1+x][y+2] &&
+				board[1+x][y+2] == board[2+x][y+1] &&
+				board[2+x][y+1] == board[x+3][y] &&
+				board[x+3][y] != 1) {
 				return true
 			}
-
 			if (
-				g.board[x][y] == g.board[1+x][y+1] &&
-				g.board[1+x][y+1] == g.board[2+x][y+2] &&
-				g.board[2+x][y+2] == g.board[3+x][y+3] &&
-				g.board[3+x][y+3] != 1) {
+				board[x][y] == board[1+x][y+1] &&
+				board[1+x][y+1] == board[2+x][y+2] &&
+				board[2+x][y+2] == board[3+x][y+3] &&
+				board[3+x][y+3] != 1) {
 				return true
 			}
 		}
 	}
-
 	return false
+}
+
+func isFoorWining(board [][]uint8, piece uint8) bool {
+	for x:=0; x<7; x++ {
+		for y:=0; y<3; y++ {
+			if (
+				board[x][y] == board[x][1+y] &&
+				board[x][1+y] == board[x][2+y] &&
+				board[x][2+y] == board[x][3+y] &&
+				board[x][3+y] == piece) {
+				return true
+			}
+			if (
+				board[y][x] == board[1+y][x] &&
+				board[1+y][x] == board[2+y][x] &&
+				board[2+y][x] == board[3+y][x] &&
+				board[3+y][x] == piece) {
+				return true
+			}
+		}
+	}
+	for x:=0; x<4; x++ {
+		for y:=0; y<4; y++ {
+			if (
+				board[x][y+3] == board[1+x][y+2] &&
+				board[1+x][y+2] == board[2+x][y+1] &&
+				board[2+x][y+1] == board[x+3][y] &&
+				board[x+3][y] == piece) {
+				return true
+			}
+			if (
+				board[x][y] == board[1+x][y+1] &&
+				board[1+x][y+1] == board[2+x][y+2] &&
+				board[2+x][y+2] == board[3+x][y+3] &&
+				board[3+x][y+3] == piece) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (g *Game) CheckIfIsValid(n uint8) bool {
+	return g.board[n][6] == 1
+}
+
+func getValidPlay(board [][]uint8) []uint8 {
+	ret := make([]uint8,0)
+	for i := uint8(0); i<7; i++ {
+		if board[i][6] == 1 {
+			ret = append(ret, i)
+		}
+	}
+	return ret
+}
+
+func (g *Game) GetCopyOfBoard()[][]uint8 {
+	return getCopyOfBoard(g.board)
+}
+
+func getCopyOfBoard(board [][]uint8) [][]uint8 {
+	ret := make([][]uint8, 7)
+	for i := 0; i < 7; i++ {
+		ret[i] = make([]uint8, 7)
+		copy(ret[i], board[i])
+	}
+	return ret
 }
