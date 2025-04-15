@@ -100,7 +100,7 @@ func (n *Nnnarv) getNNearestPoint(coord []float64, nbNearest int) ([]Point, []fl
 	}
 	return selected, dist
 }
-
+/*
 func (n *Nnnarv) GetValueOfPoint(coord []float64, nbNearest int) []float64 {
 	points, dists := n.getNNearestPoint(coord, nbNearest)
 	ttPart := float64(0)
@@ -120,7 +120,7 @@ func (n *Nnnarv) GetValueOfPoint(coord []float64, nbNearest int) []float64 {
 	}
 	return res
 }
-/*
+*/
 func (n *Nnnarv) GetValueOfPoint(coord []float64, nbNearest int) string {
 	points, dists := n.getNNearestPoint(coord, nbNearest)
 
@@ -142,4 +142,4 @@ func (n *Nnnarv) GetValueOfPoint(coord []float64, nbNearest int) string {
 		}
 	}
 	return res
-}*/
+}

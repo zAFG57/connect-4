@@ -25,14 +25,15 @@ func loadCsvToNnnarv(nnnarv *Nnnarv, fichier string) {
 		if len(fields) < 2 {
 			continue
 		}
-		value := fields[0]
+		fmt.Println(fields)
+		value := fields[7*7]
 		coords := make([]float64, len(fields)-1)
-		for i := 1; i < len(fields); i++ {
+		for i := 0; i < len(fields)-1; i++ {
 			coord, err := strconv.ParseFloat(fields[i], 64)
 			if err != nil {
 				coord = float64(0)
 			}
-			coords[i-1] = coord
+			coords[i] = coord
 		}
 		point := Point{valueStr: value, coord: coords}
 		nnnarv.AddPoint(point)

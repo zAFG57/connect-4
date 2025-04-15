@@ -6,8 +6,8 @@ import (
 
 type Point struct {
 	coord 		[]float64
-	// valueStr 	string
-	value		[]float64
+	valueStr 	string
+	// value		[]float64
 }
 
 func (p1 *Point) GetDistance(p2 *Point) float64 {
