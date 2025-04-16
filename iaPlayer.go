@@ -19,7 +19,7 @@ func (ia IaPlayer) Click(y int) {
 }
 
 func (ia *IaPlayer) YourTurn() {
-	v,_ := ia.MinMax(ia.game.board,6,math.MinInt,math.MaxInt,true)
+	v,_ := ia.MinMax(ia.game.board,6,math.MinInt,math.MaxInt,false)
 	if (ia.game.CheckIfIsValid(uint8(v))) {
 		ia.game.Play(uint8(v))
 	} else {
@@ -101,6 +101,7 @@ func eval(arr [4]uint8, piece uint8, rivPiece uint8) int {
 	for i:=0; i<4; i++ {
 		if arr[i] == piece {
 			p++
+			continue
 		}
 		if arr[i] == rivPiece {
 			rivP++
@@ -112,11 +113,14 @@ func eval(arr [4]uint8, piece uint8, rivPiece uint8) int {
 	if p == 3 && rivP == 0 {
 		return 5
 	}
+	if rivP == 3 && p == 0 {
+		return -5
+	}
 	if p == 2 && rivP == 0{
 		return 2
 	}
-	if rivP == 3 && p == 0 {
-		return -400
+	if rivP == 2 && p == 0{
+		return -2
 	}
 	return 0
 }
