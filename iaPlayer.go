@@ -137,22 +137,20 @@ func eval(arr [4]uint8, piece uint8, rivPiece uint8) int {
 func (ia *IaPlayer) ScorePos(board [][]uint8, piece uint8,rivPiece uint8) int {
 	ret := 0
 	for x:=0; x<7; x++ {
-		for y:=0; y<3; y++ {
+		for y:=0; y<4; y++ {
+			if x<4 {
+				ret += eval(
+					[4]uint8{board[x][y+3],board[1+x][y+2],board[2+x][y+1],board[x+3][y]},
+				piece,rivPiece)
+				ret += eval(
+					[4]uint8{board[x][y],board[1+x][y+1],board[2+x][y+2],board[3+x][y+3]},
+				piece,rivPiece)
+			}
 			ret += eval(
 				[4]uint8{board[x][y],board[x][1+y],board[x][2+y],board[x][3+y]},
 			piece,rivPiece)
 			ret += eval(
 				[4]uint8{board[y][x],board[1+y][x],board[2+y][x],board[3+y][x]},
-			piece,rivPiece)
-		}
-	}
-	for x:=0; x<4; x++ {
-		for y:=0; y<4; y++ {
-			ret += eval(
-				[4]uint8{board[x][y+3],board[1+x][y+2],board[2+x][y+1],board[x+3][y]},
-			piece,rivPiece)
-			ret += eval(
-				[4]uint8{board[x][y],board[1+x][y+1],board[2+x][y+2],board[3+x][y+3]},
 			piece,rivPiece)
 		}
 	}

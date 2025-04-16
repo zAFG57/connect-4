@@ -25,8 +25,7 @@ func (g *Game) Init(p1 Player, p2 Player, img *image.RGBA) {
 			g.board[i][y] = 1
 		}
 	}
-	g.isToPlayer1ToPlay = true
-	g.player1.YourTurn()
+	g.NextPlayerToPlay()
 	g.UpdateGraphicalBoard()
 }
 
@@ -36,6 +35,15 @@ func (g *Game) Click(y int) {
 		return
 	}
 	g.player2.Click(y)
+}
+
+func (g *Game) NextPlayerToPlay() {
+	g.isToPlayer1ToPlay = !g.isToPlayer1ToPlay
+	if (g.isToPlayer1ToPlay) {
+		go g.player1.YourTurn()
+		return
+	}
+	go g.player2.YourTurn()
 }
 
 func (g *Game) Play(n uint8) {
@@ -61,12 +69,7 @@ func (g *Game) Play(n uint8) {
 		fmt.Println("le joueur rouge a gagné")
 		return
 	}
-	g.isToPlayer1ToPlay = !g.isToPlayer1ToPlay
-	if (g.isToPlayer1ToPlay) {
-		go g.player1.YourTurn()
-		return
-	}
-	go g.player2.YourTurn()
+	g.NextPlayerToPlay()
 }
 
 func drawcube(img *image.RGBA, x int, y int,color color.RGBA) {
@@ -99,6 +102,22 @@ func (g *Game) IsFoorConnected() bool {
 func isFoorConnected(board [][]uint8) bool {
 	for x:=0; x<7; x++ {
 		for y:=0; y<4; y++ {
+			if x<4 {
+				if (
+					board[x][y+3] == board[1+x][y+2] &&
+					board[1+x][y+2] == board[2+x][y+1] &&
+					board[2+x][y+1] == board[x+3][y] &&
+					board[x+3][y] != 1) {
+					return true
+				}
+				if (
+					board[x][y] == board[1+x][y+1] &&
+					board[1+x][y+1] == board[2+x][y+2] &&
+					board[2+x][y+2] == board[3+x][y+3] &&
+					board[3+x][y+3] != 1) {
+					return true
+				}
+			}
 			if (
 				board[x][y] == board[x][1+y] &&
 				board[x][1+y] == board[x][2+y] &&
@@ -115,30 +134,28 @@ func isFoorConnected(board [][]uint8) bool {
 			}
 		}
 	}
-	for x:=0; x<4; x++ {
-		for y:=0; y<4; y++ {
-			if (
-				board[x][y+3] == board[1+x][y+2] &&
-				board[1+x][y+2] == board[2+x][y+1] &&
-				board[2+x][y+1] == board[x+3][y] &&
-				board[x+3][y] != 1) {
-				return true
-			}
-			if (
-				board[x][y] == board[1+x][y+1] &&
-				board[1+x][y+1] == board[2+x][y+2] &&
-				board[2+x][y+2] == board[3+x][y+3] &&
-				board[3+x][y+3] != 1) {
-				return true
-			}
-		}
-	}
 	return false
 }
 
 func isFoorWining(board [][]uint8, piece uint8) bool {
 	for x:=0; x<7; x++ {
 		for y:=0; y<4; y++ {
+			if x<4 {
+				if (
+					board[x][y+3] == board[1+x][y+2] &&
+					board[1+x][y+2] == board[2+x][y+1] &&
+					board[2+x][y+1] == board[x+3][y] &&
+					board[x+3][y] == piece) {
+					return true
+				}
+				if (
+					board[x][y] == board[1+x][y+1] &&
+					board[1+x][y+1] == board[2+x][y+2] &&
+					board[2+x][y+2] == board[3+x][y+3] &&
+					board[3+x][y+3] == piece) {
+					return true
+				}
+			}
 			if (
 				board[x][y] == board[x][1+y] &&
 				board[x][1+y] == board[x][2+y] &&
@@ -151,24 +168,6 @@ func isFoorWining(board [][]uint8, piece uint8) bool {
 				board[1+y][x] == board[2+y][x] &&
 				board[2+y][x] == board[3+y][x] &&
 				board[3+y][x] == piece) {
-				return true
-			}
-		}
-	}
-	for x:=0; x<4; x++ {
-		for y:=0; y<4; y++ {
-			if (
-				board[x][y+3] == board[1+x][y+2] &&
-				board[1+x][y+2] == board[2+x][y+1] &&
-				board[2+x][y+1] == board[x+3][y] &&
-				board[x+3][y] == piece) {
-				return true
-			}
-			if (
-				board[x][y] == board[1+x][y+1] &&
-				board[1+x][y+1] == board[2+x][y+2] &&
-				board[2+x][y+2] == board[3+x][y+3] &&
-				board[3+x][y+3] == piece) {
 				return true
 			}
 		}
@@ -188,10 +187,6 @@ func getValidPlay(board [][]uint8) []uint8 {
 		}
 	}
 	return ret
-}
-
-func (g *Game) GetCopyOfBoard()[][]uint8 {
-	return getCopyOfBoard(g.board)
 }
 
 func getCopyOfBoard(board [][]uint8) [][]uint8 {
