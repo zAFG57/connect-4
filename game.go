@@ -27,6 +27,7 @@ func (g *Game) Init(p1 Player, p2 Player, img *image.RGBA) {
 	}
 	g.isToPlayer1ToPlay = true
 	g.player1.YourTurn()
+	g.UpdateGraphicalBoard()
 }
 
 func (g *Game) Click(y int) {
@@ -68,23 +69,24 @@ func (g *Game) Play(n uint8) {
 	go g.player2.YourTurn()
 }
 
+func drawcube(img *image.RGBA, x int, y int,color color.RGBA) {
+	for a:=0; a<30; a++ {
+		for b:=0; b<30; b++ {
+			img.Set(x*40+a+5,280-(y*40+b+5), color)
+		}
+	}
+}
 
 func (g *Game) UpdateGraphicalBoard() {
 	for x:=0; x<7; x++ {
 		for y:=0; y<7; y++ {
 			switch g.board[x][y] {
 			case 0:
-				for a:=0; a<30; a++ {
-					for b:=0; b<30; b++ {
-						g.img.Set(x*40+a+5,280-(y*40+b+5), color.RGBA{0, 0, 255, 255})
-					}
-				}
+				drawcube(g.img,x,y,color.RGBA{0, 0, 255, 255})
+			case 1:
+				drawcube(g.img,x,y,color.RGBA{50, 50, 50, 255})
 			case 2:
-				for a:=0; a<30; a++ {
-					for b:=0; b<30; b++ {
-						g.img.Set(x*40+a+5,280-(y*40+b+5), color.RGBA{255, 0, 0, 255})
-					}
-				}
+				drawcube(g.img,x,y,color.RGBA{255, 0, 0, 255})
 			}
 		}
 	}
@@ -96,7 +98,7 @@ func (g *Game) IsFoorConnected() bool {
 
 func isFoorConnected(board [][]uint8) bool {
 	for x:=0; x<7; x++ {
-		for y:=0; y<3; y++ {
+		for y:=0; y<4; y++ {
 			if (
 				board[x][y] == board[x][1+y] &&
 				board[x][1+y] == board[x][2+y] &&
@@ -136,7 +138,7 @@ func isFoorConnected(board [][]uint8) bool {
 
 func isFoorWining(board [][]uint8, piece uint8) bool {
 	for x:=0; x<7; x++ {
-		for y:=0; y<3; y++ {
+		for y:=0; y<4; y++ {
 			if (
 				board[x][y] == board[x][1+y] &&
 				board[x][1+y] == board[x][2+y] &&

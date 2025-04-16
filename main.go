@@ -30,8 +30,8 @@ func run() {
 }
 
 func playingLoop(win *pixelgl.Window, img *image.RGBA) {
-	for ;!win.Closed() && isGameRuning; {
-		if !isTimedOut && win.Pressed(pixelgl.MouseButtonLeft) {
+	for ;!win.Closed(); {
+		if !isTimedOut && win.Pressed(pixelgl.MouseButtonLeft) && isGameRuning {
 			x,_ := getCursorPosition(win)
 			game.Click(x)
 			go func() {

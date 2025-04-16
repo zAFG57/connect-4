@@ -19,28 +19,28 @@ func (ia IaPlayer) Click(y int) {
 }
 
 func (ia *IaPlayer) YourTurn() {
-	v,_ := ia.MinMax(ia.game.board,6,math.MinInt,math.MaxInt,false)
+	v,_ := ia.MinMax(ia.game.board,8,math.MinInt,math.MaxInt,false)
 	if (ia.game.CheckIfIsValid(uint8(v))) {
 		ia.game.Play(uint8(v))
 	} else {
 		fmt.Println("l'IA ne peut pas jouer en: ",v)
-		i := uint8(rand.Intn(8))
+		i := uint8(rand.Intn(7))
 		for !ia.game.CheckIfIsValid(i) {
-			i = uint8(rand.Intn(8))
+			i = uint8(rand.Intn(7))
 		}
 		ia.game.Play(i)
 	}
 }
 
 func (ia *IaPlayer) MinMax(board [][]uint8,idx uint8, min int, max int, needMax bool) (uint8,int) {
+	if isFoorWining(board,0) {
+		return 8, math.MinInt
+	}
 	board = getCopyOfBoard(board)
 	valid := getValidPlay(board)
 	if isFoorConnected(board) || len(valid) == 0 {
 		if isFoorWining(board,2) {
 			return 8, math.MaxInt
-		}
-		if isFoorWining(board,0) {
-			return 8, math.MinInt
 		}
 		return 8,0
 	}
@@ -49,18 +49,20 @@ func (ia *IaPlayer) MinMax(board [][]uint8,idx uint8, min int, max int, needMax 
 	}
 	if needMax {
 		val := math.MinInt
-		col := 0
+		col := valid[0]
+		r := 0
 		for i:=0; i<len(valid); i++ {
 			for y:=0; y<7; y++ {
 				if (board[i][y] == 1) {
 					board[i][y] = 2
+					r = y
 					break
 				}
 			}
 			_,nv := ia.MinMax(board,idx-1,min,max,false)
 			if nv>val {
 				val = nv
-				col = i
+				col = valid[i]
 				if val>min {
 					min = val
 				}
@@ -68,31 +70,35 @@ func (ia *IaPlayer) MinMax(board [][]uint8,idx uint8, min int, max int, needMax 
 					break
 				}
 			}
+			board[i][r] = 1
 		}
 		return uint8(col),val
 	}
 	val := math.MaxInt
-		col := 0
-		for i:=0; i<len(valid); i++ {
-			for y:=0; y<7; y++ {
-				if (board[i][y] == 1) {
-					board[i][y] = 0
-					break
-				}
-			}
-			_,nv := ia.MinMax(board,idx-1,min,max,true)
-			if nv<val {
-				val = nv
-				col = i
-				if val<max {
-					max = val
-				}
-				if min>=max {
-					break
-				}
+	col := valid[0]
+	r:= 0
+	for i:=0; i<len(valid); i++ {
+		for y:=0; y<7; y++ {
+			if (board[i][y] == 1) {
+				board[i][y] = 0
+				r = y
+				break
 			}
 		}
-		return uint8(col),val
+		_,nv := ia.MinMax(board,idx-1,min,max,true)
+		if nv<val {
+			val = nv
+			col = valid[i]
+			if val<max {
+				max = val
+			}
+			if min>=max {
+				break
+			}
+		}
+		board[i][r] = 1
+	}
+	return uint8(col),val
 }
 
 func eval(arr [4]uint8, piece uint8, rivPiece uint8) int {
@@ -108,7 +114,10 @@ func eval(arr [4]uint8, piece uint8, rivPiece uint8) int {
 		}
 	}
 	if p == 4 {
-		return 100
+		return 1000
+	}
+	if rivP == 4 {
+		return -1000
 	}
 	if p == 3 && rivP == 0 {
 		return 5
