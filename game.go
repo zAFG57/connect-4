@@ -62,13 +62,13 @@ func (g *Game) Play(n uint8) {
 	g.UpdateGraphicalBoard()
 	if g.IsFoorConnected() {
 		isGameRuning = false
+		wincube := getFoorConnected(g.board)
+		drawWiningCube(wincube,g.img)
 		if g.isToPlayer1ToPlay {
 			fmt.Println("le joueur bleau a gagné")
 			return
 		}
 		fmt.Println("le joueur rouge a gagné")
-		wincube := getFoorConnected(g.board)
-		drawWiningCube(wincube,g.img)
 		return
 	}
 	g.NextPlayerToPlay()
