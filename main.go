@@ -31,8 +31,9 @@ func run() {
 
 func playingLoop(win *pixelgl.Window, img *image.RGBA) {
 	for ;!win.Closed(); {
+		x,_ := getCursorPosition(win)
+		game.DrawPreviewCube((x/40)%7)
 		if !isTimedOut && win.Pressed(pixelgl.MouseButtonLeft) && isGameRuning {
-			x,_ := getCursorPosition(win)
 			game.Click(x)
 			go func() {
 				isTimedOut = true

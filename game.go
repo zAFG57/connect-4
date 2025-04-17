@@ -74,6 +74,16 @@ func (g *Game) Play(n uint8) {
 	g.NextPlayerToPlay()
 }
 
+func (g *Game) DrawPreviewCube(x int) {
+	for i:=0; i<7; i++ {
+		if g.board[x][i] == 1 {
+			g.UpdateGraphicalBoard()
+			drawcube(g.img,x,i,color.RGBA{0,0,150,255})
+			break
+		}
+	}
+}
+
 func drawWiningCube(winCube [4][2]uint8, img *image.RGBA) {
 	for i:=0; i<4; i++ {
 		for a:=0; a<40; a++ {
