@@ -67,9 +67,24 @@ func (g *Game) Play(n uint8) {
 			return
 		}
 		fmt.Println("le joueur rouge a gagné")
+		wincube := getFoorConnected(g.board)
+		drawWiningCube(wincube,g.img)
 		return
 	}
 	g.NextPlayerToPlay()
+}
+
+func drawWiningCube(winCube [4][2]uint8, img *image.RGBA) {
+	for i:=0; i<4; i++ {
+		for a:=0; a<40; a++ {
+			for b:=0; b<40; b++ {
+				if b>=5 && b<35 && a>=5 && a<35 {
+					continue
+				}
+				img.Set(int(winCube[i][0])*40+a,280-(int(winCube[i][1])*40+b), color.RGBA{0,255,0,255})
+			}
+		}
+	}
 }
 
 func drawcube(img *image.RGBA, x int, y int,color color.RGBA) {
@@ -135,6 +150,61 @@ func isFoorConnected(board [][]uint8) bool {
 		}
 	}
 	return false
+}
+
+func getFoorConnected(board [][]uint8) [4][2]uint8 {
+	for x:=0; x<7; x++ {
+		for y:=0; y<4; y++ {
+			if x<4 {
+				if (
+					board[x][y+3] == board[1+x][y+2] &&
+					board[1+x][y+2] == board[2+x][y+1] &&
+					board[2+x][y+1] == board[x+3][y] &&
+					board[x+3][y] != 1) {
+					return [4][2]uint8{
+						{uint8(x), uint8(y+3)},
+						{uint8(x+1), uint8(y+2)},
+						{uint8(x+2), uint8(y+1)},
+						{uint8(x+3), uint8(y)}}
+				}
+				if (
+					board[x][y] == board[1+x][y+1] &&
+					board[1+x][y+1] == board[2+x][y+2] &&
+					board[2+x][y+2] == board[3+x][y+3] &&
+					board[3+x][y+3] != 1) {
+					return [4][2]uint8{
+						{uint8(x),uint8(y)},
+						{uint8(x+1),uint8(y+1)},
+						{uint8(x+2),uint8(y+2)},
+						{uint8(x+3),uint8(y+3)}}
+				}
+			}
+			if (
+				board[x][y] == board[x][1+y] &&
+				board[x][1+y] == board[x][2+y] &&
+				board[x][2+y] == board[x][3+y] &&
+				board[x][3+y] != 1) {
+					return [4][2]uint8{
+						{uint8(x),uint8(y)},
+						{uint8(x),uint8(y+1)},
+						{uint8(x),uint8(y+2)},
+						{uint8(x),uint8(y+3)}}
+			}
+			if (
+				board[y][x] == board[1+y][x] &&
+				board[1+y][x] == board[2+y][x] &&
+				board[2+y][x] == board[3+y][x] &&
+				board[3+y][x] != 1) {
+					return [4][2]uint8{
+						{uint8(y),uint8(x)},
+						{uint8(y+1),uint8(x)},
+						{uint8(y+2),uint8(x)},
+						{uint8(y+3),uint8(x)}}
+			}
+		}
+	}
+	fmt.Println("error, il n'y a pas de gagnant")
+	return [4][2]uint8{}
 }
 
 func isFoorWining(board [][]uint8, piece uint8) bool {
